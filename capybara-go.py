@@ -50,9 +50,9 @@ class Player(Character):
     def __init__(self, x, y):
         # Use os nomes das imagens da sua capivara
         player_animations = {
-            'idle': ['hero_idle_1', 'hero_idle_2'], 
-            'walk_right': ['hero_walk_right_1', 'hero_walk_right_2', 'hero_walk_right_3'],
-            'walk_left': ['hero_walk_left_1', 'hero_walk_left_2', 'hero_walk_left_3']
+            'idle': ['capy_idle_1', 'capy_idle_2'], 
+            'walk_right': ['capy_walk_right_1', 'capy_walk_right_2', 'capy_walk_right_3'],
+            'walk_left': ['capy_walk_left_1', 'capy_walk_left_2', 'capy_walk_left_3']
         }
         
         super().__init__(player_animations, x, y)
