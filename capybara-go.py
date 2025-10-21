@@ -11,7 +11,7 @@ WORLD_WIDTH = 3200
 camera_x = 0       
 
 GRAVITY = 800
-JUMP_STRENGTH = 450
+JUMP_STRENGTH = 500
 GROUND_Y = 550
 
 game_state = 'menu'
@@ -244,7 +244,7 @@ def draw():
 
     elif game_state == 'win':
         screen.fill('blue')
-        screen.draw.text('VOCÊ VENCEU!', center=(WIDTH/2, HEIGHT/2 - 40), fontsize=80)
+        screen.draw.text('VOCE VENCEU!', center=(WIDTH/2, HEIGHT/2 - 40), fontsize=80)
         screen.draw.text(f'Score Final: {score}', center=(WIDTH/2, HEIGHT/2 + 40), fontsize=60)
 
     elif game_state == 'game_over':
