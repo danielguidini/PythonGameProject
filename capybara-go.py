@@ -214,7 +214,9 @@ def update(dt):
                     except:
                         print("Arquivo de som 'dano' não encontrado")
                 game_state = 'game_over'
+                music_on = False
                 break
+            
 
 def on_mouse_down(pos):
     global game_state, music_on
