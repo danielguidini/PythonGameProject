@@ -127,7 +127,6 @@ class Enemy(Character):
         
         self.update_animation(dt)
 
-# Lista de inimigos
 mrbones = []
 
 player = Player(WIDTH/2, GROUND_Y)
@@ -165,7 +164,6 @@ def draw():
         screen.draw.text(f"Score: {score}", (10, 10), fontsize=40, color="yellow")
         
         player.draw()
-        # --- CORREÇÃO APLICADA AQUI ---
         for enemy in mrbones:  
             enemy.draw()
 
@@ -181,7 +179,7 @@ def draw():
 def update(dt):
     global game_state, score, music_on 
     
-    if music_on and not music.is_playing():
+    if music_on and not music.is_playing('background.mp3'):
         music.play('background.mp3')
     elif not music_on:
         music.stop()
@@ -232,8 +230,7 @@ def on_mouse_down(pos):
     if game_state == 'game_over' or game_state == 'win':
         quit()
 
-try:
-    music.play('background.mp3') 
+try: 
     music.set_volume(0.3)
 except:
     print("Arquivo de música 'background.mp3' não encontrado na pasta /music/")
