@@ -126,6 +126,8 @@ class Enemy(Character):
                 self.current_animation = 'walk_right'
         
         self.update_animation(dt)
+
+# Lista de inimigos
 mrbones = []
 
 player = Player(WIDTH/2, GROUND_Y)
@@ -163,8 +165,9 @@ def draw():
         screen.draw.text(f"Score: {score}", (10, 10), fontsize=40, color="yellow")
         
         player.draw()
-        for mrbones in mrbones:  
-            mrbones.draw()
+        # --- CORREÇÃO APLICADA AQUI ---
+        for enemy in mrbones:  
+            enemy.draw()
 
     elif game_state == 'win':
         screen.fill('blue')
@@ -184,9 +187,9 @@ def update(dt):
         music.stop()
 
     if game_state == 'playing':
-        player.update(dt) 
-        for mrbones in mrbones:
-            mrbones.update(dt)
+        player.update(dt)
+        for enemy in mrbones:
+            enemy.update(dt)
 
         collected_stars = []
         for star in stars:
@@ -204,8 +207,8 @@ def update(dt):
         if not stars:
             game_state = 'win'
 
-        for'mrbones in'mrboness:
-            if player.actor.colliderect'mrbones.actor):
+        for enemy in mrbones:
+            if player.actor.colliderect(enemy.actor):
                 print("Crash! Mr. Bones te capturou!")
                 if music_on:
                     try:
@@ -213,6 +216,7 @@ def update(dt):
                     except:
                         print("Arquivo de som 'dano' não encontrado")
                 game_state = 'game_over'
+                break
 
 def on_mouse_down(pos):
     global game_state, music_on
