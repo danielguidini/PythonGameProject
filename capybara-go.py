@@ -5,9 +5,9 @@ from pygame import Rect
 
 WIDTH = 800
 HEIGHT = 600
-TITLE = "Capybara Go! (Com Câmera e Plataformas)"
+TITLE = "Capybara Go!"
 
-WORLD_WIDTH = 2400  
+WORLD_WIDTH = 3200  
 camera_x = 0       
 
 GRAVITY = 800
@@ -33,6 +33,9 @@ platforms = [
     Rect((1600, 400), (100, 20)),
     Rect((1800, 320), (150, 20)),
     Rect((2050, 250), (100, 20)),
+    Rect((2400, 450), (150, 20)), 
+    Rect((2600, 350), (100, 20)),
+    Rect((2850, 400), (200, 20)),
 ]
 
 
@@ -63,8 +66,8 @@ class Player(Character):
     def __init__(self, x, y):
         player_animations = {
             'idle': ['capy_idle_1', 'capy_idle_2'], 
-            'walk_right': ['capy_walk_right_1', 'capy_walk_right_2', 'capy_walk_right_3', 'capy_walk_right_4'],
-            'walk_left': ['capy_walk_left_1', 'capy_walk_left_2', 'capy_walk_left_3', 'capy_walk_left_4']
+            'walk_right': ['capy_walk_right_1', 'capy_walk_right_2', 'capy_walk_right_3', 'capy_walk_right_4', 'capy_walk_right_3', 'capy_walk_right_2'],
+            'walk_left': ['capy_walk_left_1', 'capy_walk_left_2', 'capy_walk_left_3', 'capy_walk_left_4', 'capy_walk_left_3', 'capy_walk_left_2']
         }
         
         super().__init__(player_animations, x, y)
@@ -180,6 +183,8 @@ mrbones.append(Enemy(500, GROUND_Y))
 mrbones.append(Enemy(1000, GROUND_Y))
 mrbones.append(Enemy(1400, 450)) 
 mrbones.append(Enemy(1900, 320)) 
+mrbones.append(Enemy(2500, GROUND_Y))
+mrbones.append(Enemy(2700, 350))
 
 stars = []
 
@@ -215,8 +220,7 @@ def draw():
         
         for p in platforms:
             screen_rect = Rect((p.x - camera_x, p.y), (p.width, p.height))
-            screen.draw.filled_rect(screen_rect, 'saddlebrown') # Cor de plataforma
-            
+            screen.draw.filled_rect(screen_rect, 'saddlebrown')
 
         player_world_x = player.actor.x
         enemies_world_x = [e.actor.x for e in mrbones]
