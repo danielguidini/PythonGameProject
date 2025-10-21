@@ -92,8 +92,8 @@ class Enemy(Character):
     def __init__(self, x, y):
         enemy_animations = {
             'idle': ['mrbones_idle_1', 'mrbones_idle_2'],
-            'walk_right': ['mrbones_walk_right_1', 'mrbones_walk_right_2', 'mrbones_walk_right_3', 'mrbones_walk_right_4'],
-            'walk_left': ['mrbones_walk_left_1', 'mrbones_walk_left_2', 'mrbones_walk_left_3', 'mrbones_walk_left_4']
+            'walk_right': ['mrbones_walk_right_1', 'mrbones_walk_right_2', 'mrbones_walk_right_3', 'mrbones_walk_right_4', 'mrbones_walk_right_3', 'mrbones_walk_right_2'],
+            'walk_left': ['mrbones_walk_left_1', 'mrbones_walk_left_2', 'mrbones_walk_left_3', 'mrbones_walk_left_4', 'mrbones_walk_left_3', 'mrbones_walk_left_2']
         }
         
         super().__init__(enemy_animations, x, y)
