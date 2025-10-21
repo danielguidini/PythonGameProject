@@ -5,7 +5,10 @@ from pygame import Rect
 
 WIDTH = 800
 HEIGHT = 600
-TITLE = "Capybara Go!"
+TITLE = "Capybara Go! (Com Câmera e Plataformas)"
+
+WORLD_WIDTH = 2400  
+camera_x = 0       
 
 GRAVITY = 800
 JUMP_STRENGTH = 450
@@ -20,6 +23,18 @@ start_button = Rect((WIDTH/2 - 100, 200), (200, 50))
 sound_button = Rect((WIDTH/2 - 100, 270), (200, 50))
 exit_button = Rect((WIDTH/2 - 100, 340), (200, 50))
 
+platforms = [
+    Rect((200, 450), (150, 20)),
+    Rect((400, 380), (100, 20)),
+    Rect((600, 300), (200, 20)),
+    Rect((900, 400), (100, 20)),
+    Rect((1050, 350), (150, 20)),
+    Rect((1300, 450), (200, 20)),
+    Rect((1600, 400), (100, 20)),
+    Rect((1800, 320), (150, 20)),
+    Rect((2050, 250), (100, 20)),
+]
+
 
 class Character:
     def __init__(self, animations, x, y):
@@ -30,6 +45,8 @@ class Character:
         self.animation_speed = 0.1
         self.animation_timer = 0
         self.current_animation = 'idle'
+        
+        self.actor.x = x 
 
     def update_animation(self, dt):
         self.animation_timer += dt
@@ -59,16 +76,28 @@ class Player(Character):
     def update(self, dt):
         self.velocity_y += GRAVITY * dt
         self.actor.y += self.velocity_y * dt
+        
+        self.is_on_ground = False
 
         if self.actor.bottom >= GROUND_Y:
             self.actor.bottom = GROUND_Y
             self.velocity_y = 0
             self.is_on_ground = True
+
+        for platform in platforms:
+            if self.actor.colliderect(platform) and self.velocity_y >= 0:
+                if self.actor.bottom <= platform.top + (self.velocity_y * dt): 
+                    self.actor.bottom = platform.top
+                    self.velocity_y = 0
+                    self.is_on_ground = True
         
         if (keyboard.up or keyboard.space) and self.is_on_ground:
             self.velocity_y = -JUMP_STRENGTH
             self.is_on_ground = False
-            sounds.jump.play()
+            try:
+                sounds.jump.play()
+            except:
+                pass
         
         is_moving = False
         if keyboard.left:
@@ -83,8 +112,10 @@ class Player(Character):
         if self.is_on_ground and not is_moving:
             self.current_animation = 'idle'
             
-        if self.actor.left < 0: self.actor.left = 0
-        if self.actor.right > WIDTH: self.actor.right = WIDTH
+        if self.actor.left < 0: 
+            self.actor.left = 0
+        if self.actor.right > WORLD_WIDTH: 
+            self.actor.right = WORLD_WIDTH
             
         self.update_animation(dt)
 
@@ -103,45 +134,67 @@ class Enemy(Character):
         self.current_animation = 'walk_right'
         self.velocity_y = 0
         self.is_on_ground = True
+        
+        self.patrol_min_x = x - 100
+        self.patrol_max_x = x + 100
 
     def update(self, dt):
         self.velocity_y += GRAVITY * dt
         self.actor.y += self.velocity_y * dt
+        
+        self.is_on_ground = False
         
         if self.actor.bottom >= GROUND_Y:
             self.actor.bottom = GROUND_Y
             self.velocity_y = 0
             self.is_on_ground = True
             
+        for platform in platforms:
+            if self.actor.colliderect(platform) and self.velocity_y >= 0:
+                if self.actor.bottom <= platform.top + (self.velocity_y * dt):
+                    self.actor.bottom = platform.top
+                    self.velocity_y = 0
+                    self.is_on_ground = True
+            
         if self.is_on_ground:
             self.actor.x += self.speed * dt * self.direction
             
-            if self.actor.right > WIDTH:
-                self.actor.right = WIDTH
+            if self.actor.right > min(self.patrol_max_x, WORLD_WIDTH):
+                self.actor.right = min(self.patrol_max_x, WORLD_WIDTH)
                 self.direction = -1
                 self.current_animation = 'walk_left'
-            elif self.actor.left < 0:
-                self.actor.left = 0
+            elif self.actor.left < max(self.patrol_min_x, 0):
+                self.actor.left = max(self.patrol_min_x, 0)
                 self.direction = 1
                 self.current_animation = 'walk_right'
         
         self.update_animation(dt)
 
-mrbones = []
+
 
 player = Player(WIDTH/2, GROUND_Y)
-for _ in range(3): 
-    mrbones.append(Enemy(random.randint(0, WIDTH), GROUND_Y))
+
+mrbones = []
+
+mrbones.append(Enemy(500, GROUND_Y))
+mrbones.append(Enemy(1000, GROUND_Y))
+mrbones.append(Enemy(1400, 450)) 
+mrbones.append(Enemy(1900, 320)) 
 
 stars = []
-for _ in range(10):
-    star_x = random.randint(50, WIDTH - 50)
-    star_y = random.randint(100, GROUND_Y - 50)
+
+for _ in range(5):
+    star_x = random.randint(50, WORLD_WIDTH - 50)
+    stars.append(Actor('star', (star_x, GROUND_Y - 30)))
+
+for p in platforms:
+    star_x = p.centerx
+    star_y = p.top - 30
     stars.append(Actor('star', (star_x, star_y)))
 
 
 def draw():
-    global score
+    global score, camera_x
     screen.clear()
     
     if game_state == 'menu':
@@ -157,15 +210,38 @@ def draw():
     
     elif game_state == 'playing':
         screen.fill('darkgreen')
+        
         screen.draw.filled_rect(Rect(0, GROUND_Y, WIDTH, HEIGHT - GROUND_Y), 'brown')
+        
+        for p in platforms:
+            screen_rect = Rect((p.x - camera_x, p.y), (p.width, p.height))
+            screen.draw.filled_rect(screen_rect, 'saddlebrown') # Cor de plataforma
+            
+
+        player_world_x = player.actor.x
+        enemies_world_x = [e.actor.x for e in mrbones]
+        stars_world_x = [s.x for s in stars]
+
+        player.actor.x = player_world_x - camera_x
+        for i, e in enumerate(mrbones):
+            e.actor.x = enemies_world_x[i] - camera_x
+        for i, s in enumerate(stars):
+            s.x = stars_world_x[i] - camera_x
+            
         for star in stars:
             star.draw()
             
-        screen.draw.text(f"Score: {score}", (10, 10), fontsize=40, color="yellow")
-        
         player.draw()
         for enemy in mrbones:  
             enemy.draw()
+
+        player.actor.x = player_world_x
+        for i, e in enumerate(mrbones):
+            e.actor.x = enemies_world_x[i]
+        for i, s in enumerate(stars):
+            s.x = stars_world_x[i]
+            
+        screen.draw.text(f"Score: {score}", (10, 10), fontsize=40, color="yellow")
 
     elif game_state == 'win':
         screen.fill('blue')
@@ -177,7 +253,7 @@ def draw():
         screen.draw.text('FIM DE JOGO', center=(WIDTH/2, HEIGHT/2), fontsize=80)
 
 def update(dt):
-    global game_state, score, music_on 
+    global game_state, score, music_on, camera_x
     
     if music_on and not music.is_playing('background.mp3'):
         music.play('background.mp3')
@@ -185,9 +261,14 @@ def update(dt):
         music.stop()
 
     if game_state == 'playing':
+
         player.update(dt)
         for enemy in mrbones:
             enemy.update(dt)
+
+        target_camera_x = player.actor.x - WIDTH / 2
+        
+        camera_x = max(0, min(target_camera_x, WORLD_WIDTH - WIDTH))
 
         collected_stars = []
         for star in stars:
