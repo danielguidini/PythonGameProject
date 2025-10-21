@@ -21,3 +21,6 @@
 
 	Follow on Twitter for updates:
 	http://twitter.com/KenneyNL
+
+Game_over.wav by deleted_user_877451 -- https://freesound.org/s/76376/ -- License: Attribution 3.0
+Jingle_Win_Synth_00.wav by LittleRobotSoundFactory -- https://freesound.org/s/274180/ -- License: Attribution 4.0
