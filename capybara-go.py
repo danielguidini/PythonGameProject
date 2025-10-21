@@ -254,7 +254,8 @@ def draw():
 
     elif game_state == 'game_over':
         screen.fill('black')
-        screen.draw.text('FIM DE JOGO', center=(WIDTH/2, HEIGHT/2), fontsize=80)
+        screen.draw.text('FIM DE JOGO', center=(WIDTH/2, HEIGHT/2 - 40), fontsize=80)
+        screen.draw.text('Mr. Bones te pegou!', center=(WIDTH/2, HEIGHT/2 + 40), fontsize=50)
 
 def update(dt):
     global game_state, score, music_on, camera_x
