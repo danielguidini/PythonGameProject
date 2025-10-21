@@ -148,9 +148,9 @@ def draw():
         screen.fill('darkblue')
         screen.draw.text('Capybara Go!', center=(WIDTH/2, 100), fontsize=60)
         screen.draw.filled_rect(start_button, 'green')
-        screen.draw.text('Começar o Jogo', center=start_button.center, fontsize=30)
+        screen.draw.text('Comecar o Jogo', center=start_button.center, fontsize=30)
         screen.draw.filled_rect(sound_button, 'orange')
-        sound_text = 'Música e Sons Ligados' if music_on else 'Música e Sons Desligados' 
+        sound_text = 'Musica e Sons Ligados' if music_on else 'Musica e Sons Desligados' 
         screen.draw.text(sound_text, center=sound_button.center, fontsize=25)
         screen.draw.filled_rect(exit_button, 'red')
         screen.draw.text('Sair', center=exit_button.center, fontsize=30)
@@ -216,7 +216,7 @@ def update(dt):
                 game_state = 'game_over'
                 music_on = False
                 break
-            
+
 
 def on_mouse_down(pos):
     global game_state, music_on
