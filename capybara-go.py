@@ -285,15 +285,23 @@ def update(dt):
             
         if not stars:
             game_state = 'win'
+            music.stop()
+            if music_on:
+                try:
+                    sounds.win.play()
+                except:
+                    print("Arquivo de som 'win' não encontrado na pasta /sounds/")
+            music_on = False 
 
         for enemy in mrbones:
             if player.actor.colliderect(enemy.actor):
                 print("Crash! Mr. Bones te capturou!")
+                music.stop()
                 if music_on:
                     try:
-                        sounds.dano.play()
+                        sounds.game_over.play() 
                     except:
-                        print("Arquivo de som 'dano' não encontrado")
+                        print("Arquivo de som 'game_over' não encontrado na pasta /sounds/")
                 game_state = 'game_over'
                 music_on = False
                 break
