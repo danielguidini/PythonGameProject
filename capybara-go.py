@@ -3,7 +3,6 @@ import random
 import math
 from pygame import Rect
 
-# --- 1. Constantes e Configuração da Tela ---
 WIDTH = 800
 HEIGHT = 600
 TITLE = "Capybara Go!"
@@ -12,18 +11,15 @@ GRAVITY = 800
 JUMP_STRENGTH = 450
 GROUND_Y = 550
 
-# --- 2. Variáveis Globais de Estado ---
 game_state = 'menu'
 music_on = True
-# --- AQUI ESTÁ A MUDANÇA (Score) ---
+
 score = 0
 
-# --- 3. Definição dos Botões (Rects) ---
 start_button = Rect((WIDTH/2 - 100, 200), (200, 50))
 sound_button = Rect((WIDTH/2 - 100, 270), (200, 50))
 exit_button = Rect((WIDTH/2 - 100, 340), (200, 50))
 
-# --- 4. Definição das Classes ---
 
 class Character:
     def __init__(self, animations, x, y):
@@ -48,11 +44,10 @@ class Character:
 
 class Player(Character):
     def __init__(self, x, y):
-        # Use os nomes das imagens da sua capivara
         player_animations = {
             'idle': ['capy_idle_1', 'capy_idle_2'], 
-            'walk_right': ['capy_walk_right_1', 'capy_walk_right_2', 'capy_walk_right_3'],
-            'walk_left': ['capy_walk_left_1', 'capy_walk_left_2', 'capy_walk_left_3']
+            'walk_right': ['capy_walk_right_1', 'capy_walk_right_2', 'capy_walk_right_3', 'capy_walk_right_4'],
+            'walk_left': ['capy_walk_left_1', 'capy_walk_left_2', 'capy_walk_left_3', 'capy_walk_left_4']
         }
         
         super().__init__(player_animations, x, y)
@@ -62,24 +57,19 @@ class Player(Character):
         self.is_on_ground = True
 
     def update(self, dt):
-        # 1. Aplica gravidade
         self.velocity_y += GRAVITY * dt
-        # 2. Atualiza a posição Y
         self.actor.y += self.velocity_y * dt
-        
-        # 3. Checagem de Chão
+
         if self.actor.bottom >= GROUND_Y:
             self.actor.bottom = GROUND_Y
             self.velocity_y = 0
             self.is_on_ground = True
         
-        # 4. Lógica do Pulo
         if (keyboard.up or keyboard.space) and self.is_on_ground:
             self.velocity_y = -JUMP_STRENGTH
             self.is_on_ground = False
-            # Opcional: sounds.jump.play()
+            sounds.jump.play()
         
-        # Lógica de movimento (esquerda/direita)
         is_moving = False
         if keyboard.left:
             self.actor.x -= self.speed * dt
@@ -98,14 +88,12 @@ class Player(Character):
             
         self.update_animation(dt)
 
-# --- AQUI ESTÁ A MUDANÇA (Classe Enemy renomeada) ---
-class MrBones(Character):
+class Enemy(Character):
     def __init__(self, x, y):
-        # Use os nomes das imagens do seu esqueleto
         enemy_animations = {
-            'idle': ['skeleton_idle_1'],
-            'walk_right': ['skeleton_walk_right_1', 'skeleton_walk_right_2'],
-            'walk_left': ['skeleton_walk_left_1', 'skeleton_walk_left_2']
+            'idle': ['mrbones_idle_1', 'mrbones_idle_2'],
+            'walk_right': ['mrbones_walk_right_1', 'mrbones_walk_right_2', 'mrbones_walk_right_3', 'mrbones_walk_right_4'],
+            'walk_left': ['mrbones_walk_left_1', 'mrbones_walk_left_2', 'mrbones_walk_left_3', 'mrbones_walk_left_4']
         }
         
         super().__init__(enemy_animations, x, y)
@@ -117,7 +105,6 @@ class MrBones(Character):
         self.is_on_ground = True
 
     def update(self, dt):
-        # Gravidade para o Mr. Bones
         self.velocity_y += GRAVITY * dt
         self.actor.y += self.velocity_y * dt
         
@@ -126,7 +113,6 @@ class MrBones(Character):
             self.velocity_y = 0
             self.is_on_ground = True
             
-        # Lógica de patrulha (só se move se estiver no chão)
         if self.is_on_ground:
             self.actor.x += self.speed * dt * self.direction
             
@@ -140,34 +126,26 @@ class MrBones(Character):
                 self.current_animation = 'walk_right'
         
         self.update_animation(dt)
-
-# --- 5. Criação dos Objetos (Instâncias) ---
+mrbones = []
 
 player = Player(WIDTH/2, GROUND_Y)
-
-# --- AQUI ESTÁ A MUDANÇA (Inimigos agora são skeletons) ---
-skeletons = []
 for _ in range(3): 
-    skeletons.append(MrBones(random.randint(0, WIDTH), GROUND_Y))
+    mrbones.append(Enemy(random.randint(0, WIDTH), GROUND_Y))
 
-# --- AQUI ESTÁ A MUDANÇA (Criação das Estrelas) ---
 stars = []
-for _ in range(10): # Cria 10 estrelas
-    # Garante que as estrelas não apareçam no chão ou muito alto
+for _ in range(10):
     star_x = random.randint(50, WIDTH - 50)
     star_y = random.randint(100, GROUND_Y - 50)
-    stars.append(Actor('star', (star_x, star_y))) # 'star.png' deve estar em /images/
+    stars.append(Actor('star', (star_x, star_y)))
 
-# --- 6. Funções Principais do Pygame Zero ---
 
 def draw():
-    global score # Pega a variável global
+    global score
     screen.clear()
     
     if game_state == 'menu':
         screen.fill('darkblue')
         screen.draw.text('Capybara Go!', center=(WIDTH/2, 100), fontsize=60)
-        # ... (código dos botões do menu) ...
         screen.draw.filled_rect(start_button, 'green')
         screen.draw.text('Começar o Jogo', center=start_button.center, fontsize=30)
         screen.draw.filled_rect(sound_button, 'orange')
@@ -178,20 +156,16 @@ def draw():
     
     elif game_state == 'playing':
         screen.fill('darkgreen')
-        # Desenha o chão
         screen.draw.filled_rect(Rect(0, GROUND_Y, WIDTH, HEIGHT - GROUND_Y), 'brown')
-        
-        # --- AQUI ESTÁ A MUDANÇA (Desenha estrelas e score) ---
         for star in stars:
             star.draw()
             
         screen.draw.text(f"Score: {score}", (10, 10), fontsize=40, color="yellow")
         
         player.draw()
-        for skeleton in skeletons: # Modificado de 'enemies' para 'skeletons'
-            skeleton.draw()
-    
-    # --- AQUI ESTÁ A MUDANÇA (Estado de Vitória) ---
+        for mrbones in mrbones:  
+            mrbones.draw()
+
     elif game_state == 'win':
         screen.fill('blue')
         screen.draw.text('VOCÊ VENCEU!', center=(WIDTH/2, HEIGHT/2 - 40), fontsize=80)
@@ -202,7 +176,7 @@ def draw():
         screen.draw.text('FIM DE JOGO', center=(WIDTH/2, HEIGHT/2), fontsize=80)
 
 def update(dt):
-    global game_state, score, music_on # Pega as variáveis globais
+    global game_state, score, music_on 
     
     if music_on and not music.is_playing():
         music.play('background.mp3')
@@ -211,31 +185,27 @@ def update(dt):
 
     if game_state == 'playing':
         player.update(dt) 
-        for skeleton in skeletons: # Modificado de 'enemies' para 'skeletons'
-            skeleton.update(dt)
+        for mrbones in mrbones:
+            mrbones.update(dt)
 
-        # --- AQUI ESTÁ A MUDANÇA (Lógica de Coletar Estrelas) ---
         collected_stars = []
         for star in stars:
             if player.actor.colliderect(star):
                 collected_stars.append(star)
-                score += 10 # Adiciona 10 pontos por estrela
+                score += 10 
                 try:
-                    sounds.collect.play() # 'collect.wav' deve estar em /sounds/
+                    sounds.collect.play() 
                 except:
                     print("Arquivo de som 'collect' não encontrado")
         
-        # Remove as estrelas que foram coletadas
         for star in collected_stars:
             stars.remove(star)
             
-        # --- AQUI ESTÁ A MUDANÇA (Checa condição de vitória) ---
-        if not stars: # Se a lista de estrelas está vazia
+        if not stars:
             game_state = 'win'
 
-        # Checagem de colisão com o Mr. Bones
-        for skeleton in skeletons:
-            if player.actor.colliderect(skeleton.actor):
+        for'mrbones in'mrboness:
+            if player.actor.colliderect'mrbones.actor):
                 print("Crash! Mr. Bones te capturou!")
                 if music_on:
                     try:
@@ -254,17 +224,10 @@ def on_mouse_down(pos):
             music_on = not music_on
         elif exit_button.collidepoint(pos):
             quit()
-    
-    # --- AQUI ESTÁ A MUDANÇA (Permite reiniciar após vencer ou perder) ---
-    # Se o jogo acabou ou você venceu, qualquer clique volta ao menu
+
     if game_state == 'game_over' or game_state == 'win':
-        # (Futuramente, você precisará de uma função para resetar o jogo)
-        # game_state = 'menu' 
-        # Por enquanto, apenas fechar o jogo é mais simples:
         quit()
 
-
-# --- 7. Início do Jogo ---
 try:
     music.play('background.mp3') 
     music.set_volume(0.3)
