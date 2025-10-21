@@ -123,7 +123,7 @@ class Player(Character):
         self.update_animation(dt)
 
 class Enemy(Character):
-    def __init__(self, x, y):
+    def __init__(self, x, y, patrol_range=100): 
         enemy_animations = {
             'idle': ['mrbones_idle_1', 'mrbones_idle_2'],
             'walk_right': ['mrbones_walk_right_1', 'mrbones_walk_right_2', 'mrbones_walk_right_3', 'mrbones_walk_right_4', 'mrbones_walk_right_3', 'mrbones_walk_right_2'],
@@ -138,8 +138,8 @@ class Enemy(Character):
         self.velocity_y = 0
         self.is_on_ground = True
         
-        self.patrol_min_x = x - 100
-        self.patrol_max_x = x + 100
+        self.patrol_min_x = x - patrol_range
+        self.patrol_max_x = x + patrol_range
 
     def update(self, dt):
         self.velocity_y += GRAVITY * dt
@@ -173,18 +173,13 @@ class Enemy(Character):
         
         self.update_animation(dt)
 
-
-
 player = Player(WIDTH/2, GROUND_Y)
 
 mrbones = []
-
-mrbones.append(Enemy(500, GROUND_Y))
-mrbones.append(Enemy(1000, GROUND_Y))
+mrbones.append(Enemy(500, GROUND_Y, patrol_range=300))
+mrbones.append(Enemy(1000, GROUND_Y, patrol_range=250))
 mrbones.append(Enemy(1400, 450)) 
-mrbones.append(Enemy(1900, 320)) 
-mrbones.append(Enemy(2500, GROUND_Y))
-mrbones.append(Enemy(2700, 350))
+mrbones.append(Enemy(1900, 320))
 
 stars = []
 
