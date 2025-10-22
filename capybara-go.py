@@ -97,10 +97,11 @@ class Player(Character):
         if (keyboard.up or keyboard.space) and self.is_on_ground:
             self.velocity_y = -JUMP_STRENGTH
             self.is_on_ground = False
-            try:
-                sounds.jump.play()
-            except:
-                pass
+            if music_on: # <--- CORREÇÃO 1
+                try:
+                    sounds.jump.play()
+                except:
+                    pass
         
         is_moving = False
         if keyboard.left:
@@ -275,10 +276,11 @@ def update(dt):
             if player.actor.colliderect(star):
                 collected_stars.append(star)
                 score += 10 
-                try:
-                    sounds.collect.play() 
-                except:
-                    print("Arquivo de som 'collect' não encontrado")
+                if music_on: # <--- CORREÇÃO 2
+                    try:
+                        sounds.collect.play() 
+                    except:
+                        print("Arquivo de som 'collect' não encontrado")
         
         for star in collected_stars:
             stars.remove(star)
