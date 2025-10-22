@@ -308,7 +308,6 @@ def update(dt):
                 music_on = False
                 break
 
-
 def on_mouse_down(pos):
     global game_state, music_on
     
