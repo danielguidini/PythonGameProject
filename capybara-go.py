@@ -38,7 +38,6 @@ platforms = [
     Rect((2850, 400), (200, 20)),
 ]
 
-
 class Character:
     def __init__(self, animations, x, y):
         self.animations = animations
@@ -97,7 +96,7 @@ class Player(Character):
         if (keyboard.up or keyboard.space) and self.is_on_ground:
             self.velocity_y = -JUMP_STRENGTH
             self.is_on_ground = False
-            if music_on: # <--- CORREÇÃO 1
+            if music_on:
                 try:
                     sounds.jump.play()
                 except:
@@ -193,7 +192,6 @@ for p in platforms:
     star_y = p.top - 30
     stars.append(Actor('star', (star_x, star_y)))
 
-
 def draw():
     global score, camera_x
     screen.clear()
@@ -276,7 +274,7 @@ def update(dt):
             if player.actor.colliderect(star):
                 collected_stars.append(star)
                 score += 10 
-                if music_on: # <--- CORREÇÃO 2
+                if music_on: 
                     try:
                         sounds.collect.play() 
                     except:
